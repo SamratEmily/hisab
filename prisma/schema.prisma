@@ -1,0 +1,48 @@
+// Hisab — Prisma Schema (SQLite via Prisma 7)
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  name         String?
+  image        String?
+  googleId     String?       @unique
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  contacts     Contact[]
+  transactions Transaction[]
+}
+
+model Contact {
+  id           String        @id @default(cuid())
+  userId       String
+  name         String
+  phone        String?
+  relation     String?
+  occupation   String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+}
+
+model Transaction {
+  id              String   @id @default(cuid())
+  userId          String
+  contactId       String
+  amount          Float
+  type            String   // "given" | "taken"
+  description     String?
+  transactionDate String   // stored as ISO date "YYYY-MM-DD"
+  createdAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contact         Contact  @relation(fields: [contactId], references: [id], onDelete: Cascade)
+}
