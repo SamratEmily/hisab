@@ -6,7 +6,8 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
-  const url = process.env.DATABASE_URL ?? "file:./prisma/dev.db";
+  const dbPath = process.env.NODE_ENV === "production" ? "/data/dev.db" : "file:./prisma/dev.db";
+  const url = process.env.DATABASE_URL ?? `file:${dbPath}`;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const adapter = new PrismaBetterSqlite3({ url } as any);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
